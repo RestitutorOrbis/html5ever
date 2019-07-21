@@ -14,4 +14,4 @@ path = "lib.rs"
 
 [dependencies]
 tendril = "0.4"
-markup5ever = { version = "0.9", path = "../markup5ever" }
+markup5ever = { version = "0.10", path = "../markup5ever" }
