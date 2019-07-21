@@ -137,8 +137,9 @@ impl<Sink: TreeSink> Parser<Sink> {
 
 #[cfg(test)]
 mod tests {
+    extern crate markup5ever_rcdom;
     use super::*;
-    use rcdom::RcDom;
+    use self::markup5ever_rcdom::{RcDom, SerializableHandle};
     use serialize::serialize;
     use tendril::TendrilSink;
 
@@ -148,7 +149,8 @@ mod tests {
             .from_utf8()
             .one("<title>Test".as_bytes());
         let mut serialized = Vec::new();
-        serialize(&mut serialized, &dom.document, Default::default()).unwrap();
+        let document: SerializableHandle = dom.document.clone().into();
+        serialize(&mut serialized, &document, Default::default()).unwrap();
         assert_eq!(
             String::from_utf8(serialized).unwrap().replace(" ", ""),
             "<html><head><title>Test</title></head><body></body></html>"

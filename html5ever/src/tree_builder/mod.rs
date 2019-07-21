@@ -1682,6 +1682,7 @@ where
 #[cfg(test)]
 #[allow(non_snake_case)]
 mod test {
+    extern crate markup5ever_rcdom as rcdom;
     use markup5ever::interface::{AppendNode, AppendText, NodeOrText};
     use markup5ever::interface::{ElementFlags, Tracer, TreeSink};
     use markup5ever::interface::{LimitedQuirks, NoQuirks, Quirks, QuirksMode};
@@ -1709,7 +1710,7 @@ mod test {
     use super::{TreeBuilder, TreeBuilderOpts};
     use driver::*;
     use markup5ever::Attribute;
-    use rcdom::{Handle, Node, NodeData, RcDom};
+    use self::rcdom::{Handle, Node, NodeData, RcDom};
 
     pub struct LineCountingDOM {
         pub line_vec: Vec<(QualName, u64)>,

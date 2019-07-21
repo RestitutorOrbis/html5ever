@@ -36,6 +36,9 @@
 //! [tree structure]: https://en.wikipedia.org/wiki/Tree_(data_structure)
 //! [dom wiki]: https://en.wikipedia.org/wiki/Document_Object_Model
 
+extern crate markup5ever;
+extern crate tendril;
+
 use std::borrow::Cow;
 use std::cell::{Cell, RefCell};
 use std::collections::HashSet;
@@ -47,14 +50,12 @@ use std::rc::{Rc, Weak};
 
 use tendril::StrTendril;
 
-use interface::tree_builder;
-use interface::tree_builder::{ElementFlags, NodeOrText, QuirksMode, TreeSink};
-use serialize::TraversalScope;
-use serialize::TraversalScope::{ChildrenOnly, IncludeNode};
-use serialize::{Serialize, Serializer};
-use Attribute;
-use ExpandedName;
-use QualName;
+use markup5ever::interface::tree_builder;
+use markup5ever::interface::tree_builder::{ElementFlags, NodeOrText, QuirksMode, TreeSink};
+use markup5ever::serialize::TraversalScope;
+use markup5ever::serialize::TraversalScope::{ChildrenOnly, IncludeNode};
+use markup5ever::serialize::{Serialize, Serializer};
+use markup5ever::{Attribute, ExpandedName, QualName};
 
 /// The different kinds of nodes in the DOM.
 #[derive(Debug)]
@@ -433,14 +434,22 @@ enum SerializeOp {
     Close(QualName)
 }
 
-impl Serialize for Handle {
+pub struct SerializableHandle(Handle);
+
+impl From<Handle> for SerializableHandle {
+    fn from(h: Handle) -> SerializableHandle {
+        SerializableHandle(h)
+    }
+}
+
+impl Serialize for SerializableHandle {
     fn serialize<S>(&self, serializer: &mut S, traversal_scope: TraversalScope) -> io::Result<()>
     where
         S: Serializer,
     {
         let mut ops = match traversal_scope {
-            IncludeNode => vec![SerializeOp::Open(self.clone())],
-            ChildrenOnly(_) => self
+            IncludeNode => vec![SerializeOp::Open(self.0.clone())],
+            ChildrenOnly(_) => self.0
                 .children
                 .borrow()
                 .iter()
